@@ -73,13 +73,15 @@ def filter_restaurants(data, cuisine=None, neighborhood=None, price=None, min_ra
     # Filtering logic
     for row in data:
         clean = _normalize_row(row)
+        #Check cuisine match
         if cuisine:
             if cuisine.strip().lower() not in clean.get("_cuisines", []):
                 continue
-
+        #Check neighborhood match
         if neighborhood:
             if neighborhood.strip().lower() != row.get("neighborhood", "").lower():
                 continue
+        #Check price match
         if price:
             if price.strip() != clean.get("price", ""):
                 continue
@@ -92,7 +94,7 @@ def filter_restaurants(data, cuisine=None, neighborhood=None, price=None, min_ra
                 continue
 
         results.append(row)
-
+        #if its over the limit, break
         if limit:
             if len(results) >= limit:
                 break
