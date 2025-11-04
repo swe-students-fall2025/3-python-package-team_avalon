@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "eae26392b57d731ef73e3f35a05d51b2be194dea5b27a243d863608a65bddda2"
+            "sha256": "29c4afc959a70193dda32588e149b4b1ce563573f10f0124aaa448f8ff97986e"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -165,6 +165,10 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==0.22.2"
+        },
+        "eatnyc": {
+            "editable": true,
+            "file": "."
         },
         "exceptiongroup": {
             "hashes": [

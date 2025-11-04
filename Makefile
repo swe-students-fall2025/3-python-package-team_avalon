@@ -59,8 +59,8 @@ build: clean
 	pipenv run python -m build
 
 install-wheel:
-	@echo "Installing wheel: $(WHEEL)"
-	pipenv install $(WHEEL)
+	@echo "Installing wheel (no Pipfile change): $(WHEEL)"
+	pipenv run pip install "$(WHEEL)"
 
 uninstall:
 	@echo "Uninstalling $(PACKAGE)..."
