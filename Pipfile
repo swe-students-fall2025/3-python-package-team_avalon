@@ -5,15 +5,12 @@ name = "pypi"
 
 [packages]
 pytest = "*"
-eatnyc = {file = ".", editable = true}
 build = "*"
 twine = "*"
+eatnyc = {file = ".", editable = true}
 
 [dev-packages]
 build = "*"
 twine = "*"
 pytest = "*"
 exceptiongroup = "*"
-
-[requires]
-python_version = "3.10"

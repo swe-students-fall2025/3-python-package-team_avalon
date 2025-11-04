@@ -92,6 +92,14 @@ If that set up fails for you, use:
 python3 -m pipenv install -e .
 ```
 
+## Developer Mode Switch (using Makefile)
+
+```bash
+make dev-on      # install editable
+make dev-off     # restore TestPyPI version
+make verify      # confirm path
+```
+
 # Developer Workflow (Building & Publishing)
 If you modify the code and want to publish a new version to TestPyPI, follow these steps:
 ```bash
