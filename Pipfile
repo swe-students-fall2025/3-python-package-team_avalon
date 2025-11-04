@@ -7,13 +7,9 @@ name = "pypi"
 pytest = "*"
 build = "*"
 twine = "*"
-eatnyc = {file = "dist/eatnyc-0.1.1-py3-none-any.whl"}
 
 [dev-packages]
 build = "*"
 twine = "*"
 pytest = "*"
 exceptiongroup = "*"
-
-[requires]
-python_version = "3.10"
