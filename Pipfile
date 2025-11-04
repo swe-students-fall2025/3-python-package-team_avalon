@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 pytest = "*"
-eatnyc = {file = ".", editable = true}
 build = "*"
 twine = "*"
+eatnyc = {file = ".", editable = true}
 
 [dev-packages]
 build = "*"
