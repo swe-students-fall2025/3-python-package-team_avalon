@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "542c1b089337be7a81ae6849c863b3dafcf7d86b48250ecc8cf7ed5731bc43be"
+            "sha256": "667fdf761d831d60cfce2d6026e9df5abb4f093cbbf6f8a66baac5061a29dd2a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -169,8 +169,10 @@
             "version": "==0.22.2"
         },
         "eatnyc": {
-            "editable": true,
-            "file": "."
+            "file": "dist/eatnyc-0.1.1-py3-none-any.whl",
+            "hashes": [
+                "sha256:80d084644a2c2ef62c332607ebc69f419379ff5601c3cad19cf26f110e296f2b"
+            ]
         },
         "id": {
             "hashes": [
