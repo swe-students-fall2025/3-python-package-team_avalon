@@ -2,6 +2,7 @@ from eatnyc import load_data, top_n, filter_restaurants, sample_dish, format_car
 
 
 def main():
+    # === Load Data ===
     data = load_data()
     print("rows:", len(data))
 

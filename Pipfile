@@ -14,3 +14,4 @@ build = "*"
 twine = "*"
 pytest = "*"
 exceptiongroup = "*"
+eatnyc = {file = ".", editable = true}

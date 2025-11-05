@@ -147,3 +147,10 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+dist/
+build/
+*.egg-info/
+
+dist/
+build/
+*.egg-info/
