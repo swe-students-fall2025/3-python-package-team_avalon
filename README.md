@@ -20,9 +20,9 @@ pipenv --python 3.11
 pipenv shell
 ```
 2. **Install from TestPyPI**
-Replace 0.1.1 with your latest version number (see pyproject.toml)
+Replace 0.1.2 with your latest version number (see pyproject.toml)
 ```bash
-pipenv install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc==0.1.1
+pipenv install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc==0.1.2
 ```
 For now: The --extra-index-url flag ensures dependencies are installed from the real PyPI, while your package is pulled from TestPyPI
 
@@ -174,6 +174,11 @@ python3 -m pytest
 ### Option 2: Install from PyPI (for users)
 ```bash
 pip install eatnyc
+```
+
+Or install a specific version:
+```bash
+pip install eatnyc==0.1.2
 ```
 ### Install locally (for developers)
 ```bash
