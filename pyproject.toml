@@ -6,23 +6,28 @@ build-backend = "setuptools.build_meta"
 name = "eatnyc"
 version = "0.1.2" 
 description = "A tiny NYC restaurant recommender near NYU."
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown" }  # explicit
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Team Avalon" }]
 keywords = ["nyc", "restaurants", "fun", "food", "recommendations"]
 classifiers = [
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
   "License :: OSI Approved :: MIT License",
-  "Operating System :: OS Independent"
+  "Operating System :: OS Independent",
+  "Topic :: Utilities"
 ]
 
 [project.urls]
 Homepage = "https://github.com/swe-students-fall2025/3-python-package-team_avalon"
+Source = "https://github.com/swe-students-fall2025/3-python-package-team_avalon"
 Issues = "https://github.com/swe-students-fall2025/3-python-package-team_avalon/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
+include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]

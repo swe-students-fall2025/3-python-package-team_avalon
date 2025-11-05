@@ -18,20 +18,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Python, pipenv and Pipfile packages
+      - name: Install Python, Pipenv and Pipfile packages
         uses: kojoru/prepare-pipenv@v1
         with:
           python-version: ${{ matrix.python-version }}
 
           #installing requirements.txt
-      - name: Install requirements.txt + test deps
+      - name: Install project (editable) + test/build tools
         run: |
           if [ -f requirements.txt ]; then pipenv run pip install -r requirements.txt; fi
-
-      - name: Turn on 'editable' mode
-        run: |
           pipenv install -e .
-          pipenv install pytest build
+          pipenv install pytest build twine
 
       - name: Test with pytest
         run: |
@@ -44,14 +41,30 @@ jobs:
           rm -rf dist build src/*.egg-info
           pipenv run python -m build .
 
+      - name: Twine check (README/metadata)
+        run: pipenv run twine check dist/*
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.python-version }}
+          path: dist/*
+
 
   deliver:
+    name: Publish
     if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/tags/v')
     needs: [build]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-3.11
+          path: dist
 
       - name: Install Python, pipenv and Pipfile packages
         uses: kojoru/prepare-pipenv@v1
@@ -74,14 +87,18 @@ jobs:
 
 
   #ADDED to verify upload
-  # verify-upload:
-  #   if: github.event_name != 'pull_request'
-  #   needs: [deliver]
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 5
-  #   steps:
-  #     - name: Install from TestPyPI and import
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc
-  #         python - <<'PY' import eatnyc print("Imported eatnyc OK. Version:", getattr(eatnyc, "__version__", "unknown")) PY
+  verify-upload: 
+    name: Verify install from registry
+    if: github.event_name != 'pull_request'
+    needs: [deliver]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Verify Install
+      run: |
+        python -m pip install --upgrade pip
+        pip install eatnyc
+        python - <<'PY'
+        import eatnyc
+        print("✅ Imported eatnyc OK. Version:", getattr(eatnyc, "__version__", "unknown"))
+        PY

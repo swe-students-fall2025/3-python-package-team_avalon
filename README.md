@@ -1,7 +1,3 @@
-# Python Package Exercise
-
-An exercise to create a Python package, build it, test it, distribute it, and use it. See [instructions](./instructions.md) for details.
-
 # eatnyc - NYC Restaurant Recommender
 ![Build and Test](https://github.com/swe-students-fall2025/3-python-package-team_avalon/actions/workflows/build.yaml/badge.svg)
 
@@ -11,15 +7,32 @@ It’s designed to help users explore the city’s dining scene and discover gre
 ---
 
 ## How to install and use this package
-### Option 1: Try it from **TestPyPI** (current test version)
-You can try out the latest build of eatnyc from the [TestPyPI](https://test.pypi.org/project/eatnyc/) repository. 
-
 1. **Create and Activate a virtual environment**
 ```bash
 pipenv --python 3.11
 pipenv shell
 ```
-2. **Install from TestPyPI**
+2. ### Option 1: Install from PyPI (for users)
+```bash
+pip install eatnyc
+```
+
+Or install a specific version:
+```bash
+pip install eatnyc==0.1.2
+```
+### Install locally (for developers)
+```bash
+pipenv install -e .
+```
+If that set up fails for you, use:
+```bash
+python3 -m pipenv install -e .
+```
+
+### Option 2: Try it from **TestPyPI** (current test version)
+You can try out the latest build of eatnyc from the [TestPyPI](https://test.pypi.org/project/eatnyc/) repository. 
+**Install from TestPyPI**
 Replace 0.1.2 with your latest version number (see pyproject.toml)
 ```bash
 pipenv install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc==0.1.2
@@ -40,27 +53,66 @@ python -m eatnyc
 ---
 ### Example Program
 ```python
-from eatnyc import load_data, filter_restaurants, top_n, sample_dish, format_card
+from eatnyc import load_data, top_n, filter_restaurants, sample_dish, format_card
 
-data = load_data()
 
-# Filter restaurants by cuisine and neighborhood
-italian_manhattan = filter_restaurants(
-    data,
-    cuisine="Italian",
-    neighborhood="Manhattan",
-    min_rating=4.0
-)
+def main():
+    # === Load Data ===
+    data = load_data()
+    print("rows:", len(data))
 
-# Get top 5 restaurants by rating
-best = top_n(data, n=5, sort_by="rating")
+    # === Top restaurants by rating ===
+    print("\n=== Top 5 by rating (simple print) ===")
+    for r in top_n(data, n=5):
+        print(f"- {r['name']} ({r['cuisine']}, {r['price']}) ★ {r['rating']} – {r['sample_dish']}")
 
-# Show a sample dish recommendation
-print(sample_dish(cuisine="Japanese"))
+    # === Top restaurants by rating with format_card ===
+    print("\n=== Top 5 by rating (format_card output) ===")
+    for r in top_n(data, n=5):
+        print(format_card(r, width=60))
 
-# Print formatted cards
-for r in best:
-    print(format_card(r, style="ascii", width=48))
+    # === Filtering example ===
+    print("\n=== Korean restaurants in Koreatown with $$ and rating >= 4.5 (simple print) ===")
+    filtered = filter_restaurants(
+        data,
+        cuisine="Korean",
+        neighborhood="Koreatown",
+        price="$$",
+        min_rating=4.5,
+    )
+    for r in filtered:
+        print(f"- {r['name']} ({r['cuisine']}, {r['price']}) ★ {r['rating']} – {r['sample_dish']}")
+
+    # === Same filter + card display ===
+    print("\n=== Same filtered results (format_card output) ===")
+    for r in filtered:
+        print(format_card(r, width=60))
+
+    # === Sample dish recommendations ===
+    print("\n=== Sample dish: Random Italian restaurant ===")
+    italian = sample_dish(cuisine="Italian", seed=42)
+    if isinstance(italian, dict) and "error" not in italian:
+        print(f"Try: {italian['sample_dish']} at {italian['name']}")
+        print(format_card(italian, width=60))
+    else:
+        print(f"{italian['error']}")
+        print(f"{italian['message']} {', '.join(italian['suggestions'])}")
+
+    print("\n=== Sample dish: Random restaurant (any cuisine) ===")
+    random_restaurant = sample_dish(seed=123)
+    if random_restaurant:
+        print(f"Try: {random_restaurant['sample_dish']} at {random_restaurant['name']}")
+        print(format_card(random_restaurant, width=60))
+
+    print("\n=== Sample dish: Invalid cuisine (should show suggestions) ===")
+    invalid = sample_dish(cuisine="Martian")
+    if isinstance(invalid, dict) and "error" in invalid:
+        print(f"{invalid['error']}")
+        print(f"{invalid['message']} {', '.join(invalid['suggestions'][:3])}")
+
+
+if __name__ == "__main__":
+    main()
 ```
 Run the example:
 ```bash
@@ -167,28 +219,39 @@ pipenv install pytest
 ```
 2. **Run the tests from project root:**
 ```bash
-python3 -m pytest
+pipenv run pytest -q
 ```
 3. All tests should pass. Any failed test indicates that the package code is behaving differently from the expected results.
 
-### Option 2: Install from PyPI (for users)
+# Developer Workflow (Building & Publishing)
+If you modify the code and want to publish a new version to TestPyPI, follow these steps:
+```bash
+#1. CLEAN old build artifacts
+rm -rf dist build src/*.egg-info
+pipenv install build twine
+
+#2. BUMP version number in pyproject.toml (e.g., 0.1.0 → 0.1.1)
+
+#3. BUILD the package
+pipenv run python -m build
+pipenv run twine check dist/*
+
+#4. PUBLISH to PyPI
+pipenv run twine upload dist/*
+
+#(Optional) UPLOAD new version to TestPyPI
+pipenv run twine upload -r testpypi dist/*
+```
+5. REINSTALL to test it:
+```bash
+pipenv run pip uninstall -y eatnyc
+pipenv install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc==0.1.2
+```
+6. Verify installation with:
 ```bash
 pip install eatnyc
+python -c "import eatnyc; print(eatnyc.__version__)"
 ```
-
-Or install a specific version:
-```bash
-pip install eatnyc==0.1.2
-```
-### Install locally (for developers)
-```bash
-pipenv install -e .
-```
-If that set up fails for you, use:
-```bash
-python3 -m pipenv install -e .
-```
-
 ## Developer Mode Switch (using Makefile)
 
 ```bash
@@ -197,36 +260,13 @@ make dev-off     # restore TestPyPI version
 make verify      # confirm path
 ```
 
-# Developer Workflow (Building & Publishing)
-If you modify the code and want to publish a new version to TestPyPI, follow these steps:
-```bash
-#1. CLEAN old build artifacts
-rm -rf dist build src/*.egg-info
-pipenv install build
-
-#2. BUMP version number in pyproject.toml (e.g., 0.1.0 → 0.1.1)
-
-#3. BUILD the package
-pipenv run python -m build
-
-#4. UPLOAD new version to TestPyPI
-pipenv install twine
-pipenv run twine upload -r testpypi dist/*
-```
-5. REINSTALL to test it:
-```bash
-pipenv run pip uninstall -y eatnyc
-pipenv install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc==0.1.1
-```
-6. Once final, UPLOAD to real PyPI (final version) with:
-```bash
-pipenv run twine upload dist/*
-```
 --- 
 ## Project Links
 - **PyPI:** [https://pypi.org/project/eatnyc](https://pypi.org/project/eatnyc)
 - **TestPyPI:** [https://test.pypi.org/project/eatnyc](https://test.pypi.org/project/eatnyc)
 - **Github Repo:** [https://github.com/swe-students-fall2025/3-python-package-team_avalon.git](https://github.com/swe-students-fall2025/3-python-package-team_avalon.git)
+- **Source:** [https://github.com/swe-students-fall2025/3-python-package-team_avalon](https://github.com/swe-students-fall2025/3-python-package-team_avalon)
+- **Issues:** [https://github.com/swe-students-fall2025/3-python-package-team_avalon/issues](https://github.com/swe-students-fall2025/3-python-package-team_avalon/issues)
 
 # Contributors
 - [amiraadum](https://github.com/amiraadum)
