@@ -20,9 +20,9 @@ pipenv --python 3.11
 pipenv shell
 ```
 2. **Install from TestPyPI**
-Replace 0.1.0 with your latest version number (see pyproject.toml)
+Replace 0.1.1 with your latest version number (see pyproject.toml)
 ```bash
-pipenv install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc==0.1.0
+pipenv install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple eatnyc==0.1.1
 ```
 For now: The --extra-index-url flag ensures dependencies are installed from the real PyPI, while your package is pulled from TestPyPI
 
@@ -66,6 +66,98 @@ Run the example:
 ```bash
 pipenv run python examples/demo.py
 ```
+
+## Function Documentation
+
+### `load_data(path=None, validate=True)`
+Loads NYC restaurant data from CSV file.
+
+**Parameters:**
+- `path` (str, optional): Path to CSV file. If `None`, loads bundled data file.
+- `validate` (bool, default=True): Whether to validate required columns.
+
+**Returns:**
+- `list[dict]`: List of restaurant dictionaries with normalized fields (lowercase keys, float ratings).
+
+**Example:**
+```python
+data = load_data()  # Load bundled data
+data = load_data("custom.csv")  # Load custom file
+```
+
+### `filter_restaurants(data, cuisine=None, neighborhood=None, price=None, min_rating=None, limit=None)`
+Filters restaurants based on multiple criteria.
+
+**Parameters:**
+- `data` (list): List of restaurant dictionaries (from `load_data()`).
+- `cuisine` (str, optional): Filter by cuisine type.
+- `neighborhood` (str, optional): Filter by neighborhood.
+- `price` (str, optional): Filter by price range (e.g., "$", "$$", "$$$").
+- `min_rating` (float, optional): Minimum rating threshold.
+- `limit` (int, optional): Maximum number of results to return.
+
+**Returns:**
+- `list[dict]`: Filtered list of restaurant dictionaries.
+
+**Example:**
+```python
+italian = filter_restaurants(data, cuisine="Italian", min_rating=4.5, limit=10)
+```
+
+### `top_n(data, n=5, sort_by="rating", descending=True)`
+Returns top N restaurants sorted by a specified field.
+
+**Parameters:**
+- `data` (list): List of restaurant dictionaries.
+- `n` (int, default=5): Number of results to return. Use `None` for all results.
+- `sort_by` (str, default="rating"): Field to sort by (e.g., "rating", "name", "price").
+- `descending` (bool, default=True): Whether to sort in descending order.
+
+**Returns:**
+- `list[dict]`: Top N restaurants sorted by the specified field.
+
+**Example:**
+```python
+top_5 = top_n(data, n=5, sort_by="rating", descending=True)
+top_10_by_price = top_n(data, n=10, sort_by="price", descending=False)
+```
+
+### `sample_dish(cuisine=None, seed=None)`
+Returns a random restaurant with a sample dish recommendation.
+
+**Parameters:**
+- `cuisine` (str, optional): Filter by cuisine type. If `None`, returns any restaurant.
+- `seed` (int, optional): Random seed for reproducible results.
+
+**Returns:**
+- `dict` or `None`: Restaurant dictionary with sample dish, or `None` if no matches.
+- If cuisine not found, returns dict with `error`, `suggestions`, and `message` keys.
+
+**Example:**
+```python
+random_dish = sample_dish()  # Any restaurant
+italian_dish = sample_dish(cuisine="Italian", seed=42)  # Reproducible
+```
+
+### `format_card(row, style="ascii", width=60, show_dish=True)`
+Formats a restaurant dictionary as a display card.
+
+**Parameters:**
+- `row` (dict): Restaurant dictionary (from `load_data()` or filter functions).
+- `style` (str, default="ascii"): Display style - "ascii" for box format, "markdown" for markdown.
+- `width` (int, default=60): Card width in characters (minimum 24).
+- `show_dish` (bool, default=True): Whether to include sample dish in output.
+
+**Returns:**
+- `str`: Formatted card string.
+
+**Example:**
+```python
+card = format_card(restaurant, style="ascii", width=48)
+print(card)
+```
+
+**See the complete example program:** [examples/demo.py](examples/demo.py) - demonstrates all functions working together.
 
 ## How to Run Unit Tests
 Simple unit tests are included in the 'tests' directory. To run them:
